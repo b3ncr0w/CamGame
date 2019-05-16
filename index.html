@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html>
-  <head>
-  </head>
-
-  <body>
-    <video id="video" width="640" height="480" autoplay></video>
-    <button id="snap">Snap Photo</button>
-    <canvas id="canvas" width="640" height="480"></canvas>
-    
-    <script src="js/main.js"></script>
-  </body>
+<head>
+	<style>
+		body,html {
+			margin: 0;
+			padding: 0;
+		}
+		canvas {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
+	</style>
+</head>
+<body>
+	<video id="video" width="0" height="0" autoplay></video>
+	<canvas id="canvas"></canvas>
+	
+	<script src="js/main.js"></script>
+</body>
 </html>

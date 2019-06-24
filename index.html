@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
 	<style>
 		body,html {
 			margin: 0;
 			padding: 0;
+			background-color: rgb(29, 29, 29);
+			font-size: 20px;
+			font-family: 'Montserrat';
+			color: rgb(130, 113, 194);
+		}
+		h6 {
+			color: white;
 		}
 		canvas {
 			position: absolute;
@@ -13,11 +21,85 @@
 			right: 0;
 			bottom: 0;
 		}
+		#menu {
+			display: none;
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 20px;
+			width: 320px;
+			z-index: 999;
+		}
+		button {
+			background-color: rgb(130, 113, 194);
+			border: none;
+			color: white;
+			padding: 5px 10px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 12px;
+		}
+		button:hover{ 
+			background-color: rgb(130, 113, 194);
+		}
+}
 	</style>
 </head>
 <body>
+	<div id="menu">
+		<p>Show</p>
+		<button onclick="show = 0">Clear</button>
+		<button onclick="show = 1">Clear + Map</button>
+		<button onclick="show = 2">Map</button>
+		<button onclick="show = 3">Pointer</button>
+
+		<p>Map</p>
+		<h6>Treshold</h6>
+		<button onclick="mapTreshold = 10">10</button>
+		<button onclick="mapTreshold = 20">20</button>
+		<button onclick="mapTreshold = 30">30</button>
+		<button onclick="mapTreshold = 40">40</button>
+		<button onclick="mapTreshold = 50">50</button>
+		<button onclick="mapTreshold = 60">60</button>
+		<button onclick="mapTreshold = 70">70</button>
+		<button onclick="mapTreshold = 80">80</button>
+		</br>
+		<button onclick="mapTreshold = 90">90</button>
+		<button onclick="mapTreshold = 100">100</button>
+		<button onclick="mapTreshold = 110">110</button>
+		<button onclick="mapTreshold = 120">120</button>
+		<button onclick="mapTreshold = 130">130</button>
+		<button onclick="mapTreshold = 140">140</button>
+		<button onclick="mapTreshold = 150">150</button>
+		</br></br>
+		<button onclick="mapDone = true">Map Done</button>
+		<button onclick="mapDone = false">Correct</button>
+
+		<p>Pointer</p>
+		<h6>Treshold</h6>
+		<button onclick="pointerTreshold = 210">210</button>
+		<button onclick="pointerTreshold = 220">220</button>
+		<button onclick="pointerTreshold = 230">230</button>
+		<button onclick="pointerTreshold = 240">240</button>
+		<button onclick="pointerTreshold = 250">250</button>
+		</br>
+		<button onclick="pointerTreshold = 251">251</button>
+		<button onclick="pointerTreshold = 252">252</button>
+		<button onclick="pointerTreshold = 253">253</button>
+		<button onclick="pointerTreshold = 254">254</button>
+		<button onclick="pointerTreshold = 255">255</button>
+		</br></br>
+		<button onclick="setStart()">Set Start</button>
+		<button onclick="setEnd()">Set End</button>
+	</div>
 	<canvas id="canvas"></canvas>
+
 	
+
+	<script src="js/Mouse.js"></script>
+	<script src="js/Checkpoint.js"></script>
+	<script src="js/Player.js"></script>
 	<script src="js/main.js"></script>
 </body>
 </html>

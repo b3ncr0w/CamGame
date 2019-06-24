@@ -39,9 +39,13 @@ function init() {
 }
 // MAIN LOOP
 let player = new Player();
-//let mouse = new Mouse();
-//mouse.addListeners();
 let image;
+let gameStarted = false;
+let gameWon = false;
+let notification = "Witaj w CamGame!";
+let notifColor = "#2eaf2e";
+let time = 0;
+
 mainloop = function() {
 	window.requestAnimationFrame(mainloop);
 	ctx.clearRect(0, 0, width, height);
@@ -52,17 +56,85 @@ mainloop = function() {
 		image = compute(image);
 		ctx.putImageData(image,x0,y0);
 
-		// update position
+		// check pointer position and update player pos
 		player.bounding(pointer,x0,y0);
 		// check collisions
-		if(player.collision(map,x0,y0)) player.color = "#ff0000";
-		else player.color = "#00ff00";
+		if(player.collision(map,x0,y0)) { // collision with Map
+			if(gameStarted) {
+				gameStarted = false;
+				let hitSound = new Audio('sounds/fail.wav');
+				hitSound.play();
+			}
+			player.color = "#ff0000";
+		}
+		else if(start.set && start.collision(player) && !gameStarted) { // collision with Start
+			if(start.set && end.set) {
+				notifColor = "#8271c2";
+				notification = "Gra rozpoczęta!";
+				time = 0;
+				gameStarted = true;
+				gameWon = false;
+				player.color = "#0000ff";
+				let hitSound = new Audio('sounds/start.wav');
+				hitSound.play();
+			}
+		}
+		else if(end.set && end.collision(player) && gameStarted) { // collision with End
+			if(start.set && end.set) {
+				notifColor = "#ffff00";
+				notification = "Gratulacje! Poziom ukończony!";
+				gameWon = true;
+				let hitSound = new Audio('sounds/end.mp3');
+				hitSound.play();
+				gameStarted = false;
+				player.color = "#ffff00";
+			}
+		}
+		else if(!gameStarted) {
+			if(!gameWon) time = 0;
+			notifColor = "#2eaf2e";
+			if(start.set && end.set) notification = "Wróć na START!";
+			else if(start.set && !end.set) notification = "Ustaw punkt końcowy";
+			else if(!start.set && end.set) notification = "Ustaw punkt początkowy";
+			player.color = "#000000";
+		}
 		// draw
 		if(player.pos.x < vwidth+x0) player.draw(ctx,0,0);
 		start.draw(ctx);
 		end.draw(ctx);
+
+		//count time
+		if(gameStarted) setTimeout(async function(){time += 0.1},100);
+
+		//notifications
+		ctx.font = "30px Montserrat";
+		ctx.fillStyle = notifColor;
+		ctx.fillText(notification, 10+x0, 30+y0);
+		ctx.fillStyle = "#8271c2";
+		ctx.fillText(time.toPrecision(2).toString()+"s", vwidth+x0-100, 30+y0);
 	}
 }
+
+let start = new Checkpoint();
+function setStart() {
+	start.pos.x = player.pos.x;
+	start.pos.y = player.pos.y;
+	start.color = "#00aa50";
+	start.set = true;
+	let hitSound = new Audio('sounds/map.wav');
+	hitSound.play();
+}
+
+let end = new Checkpoint();
+function setEnd() {
+	end.pos.x = player.pos.x;
+	end.pos.y = player.pos.y;
+	end.color = "#0050aa";
+	end.set = true;
+	let hitSound = new Audio('sounds/map.wav');
+	hitSound.play();
+}
+
 // IMAGE PROCESSING
 function getColor(x,y,image) {
 	let index = (image.width*y+x)*4;
@@ -75,21 +147,6 @@ function setColor(x,y,image,[r,g,b]) {
 	image.data[index+1] = g;
 	image.data[index+2] = b;
 }
-
-let start = new Checkpoint();
-function setStart() {
-	start.pos.x = player.pos.x;
-	start.pos.y = player.pos.y;
-	start.color = "#00ff50";
-}
-
-let end = new Checkpoint();
-function setEnd() {
-	end.pos.x = player.pos.x;
-	end.pos.y = player.pos.y;
-	end.color = "#0050ff";
-}
-
 let map;
 let mapDone = false;
 let mapTreshold = 100;
@@ -119,13 +176,13 @@ function compute(image) {
 		}
 	}
 
-	// merge layers
+	// show
 	for(let j=0; j<image.height;  j++) {
 		for(let i=0; i<image.width; i++) {
 			switch(show) {
 				case 1: //map hibrid
 					let [mr,mg,mb] = getColor(i,j,map); 
-					if(mr > 0 || mg > 0 || mb > 0) setColor(i,j,image,[0,50,200]);
+					if(mr > 0 || mg > 0 || mb > 0) setColor(i,j,image,[0,0,0]);
 					break;
 				case 2: //just map
 					let [zr,zg,zb] = getColor(i,j,map);
@@ -136,6 +193,9 @@ function compute(image) {
 					setColor(i,j,image,[pr*255,pg*255,pb*255]);
 					break;
 			}
+			// black strip under notifications
+			let [r,g,b] = getColor(i,j,image);
+			if(j < 50) setColor(i,j,image,[r/2,g/2,b/2]);
 		}
 	}
 	return image;
